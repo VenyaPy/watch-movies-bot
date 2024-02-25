@@ -1,1 +1,0 @@
-# kino_bot
