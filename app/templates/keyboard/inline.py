@@ -31,3 +31,17 @@ menu_buttons = [
     ]
 
 
+admin_buttons = [
+        [
+            types.InlineKeyboardButton(text='📊 Статистика', callback_data='statistics'),
+            types.InlineKeyboardButton(text='🗯️ Каналы', callback_data='channels')
+        ],
+        [
+            types.InlineKeyboardButton(text='✉️ Рассылка', callback_data='newsletter'),
+            types.InlineKeyboardButton(text='💵 VIP', callback_data='vip')
+        ],
+        [
+            types.InlineKeyboardButton(text='⚙️ Настроить', callback_data='setting'),
+            types.InlineKeyboardButton(text='⚛️ Администраторы', callback_data='admins')
+        ]
+    ]
