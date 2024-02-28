@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
+import random
 
 start_menu = [
     [
@@ -28,3 +29,5 @@ menu_buttons = [
         ],
         [types.InlineKeyboardButton(text='🔍 Начать поиск', callback_data='search')]
     ]
+
+
