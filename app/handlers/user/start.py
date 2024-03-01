@@ -1,26 +1,45 @@
 from aiogram import types, F, Router
+from aiogram.enums import ChatAction
 from aiogram.filters import Command
 from aiogram.types import Message
 
 from app.handlers.admin.start_admin import admin_start
-from app.templates.keyboard import start_keyboard
+from app.templates.keyboard.button import start_keyboard
 from app.templates.keyboard.inline import start_menu, menu_buttons
+from app.templates.text.user import instructions
 import random
 from config import admins
 from datetime import datetime
+import aiohttp
+from app.database.database import SessionLocal
+from app.database.requests.crud import add_or_update_user, get_all_user_ids
 
 router = Router()
 
+
 @router.message(Command("start"))
 async def protect(message: types.Message):
+    db = SessionLocal()
+    user_ids = get_all_user_ids(db)
+    if message.from_user.id not in user_ids:
+        try:
+            db = SessionLocal()
+            add_or_update_user(db=db, user_id=message.from_user.id, username=message.from_user.username)
+        except Exception as e:
+            print(e)
+        finally:
+            db.close()
+    else:
+        pass
+
     if message.from_user.id not in admins:
         num1 = random.randint(1, 11)
         num2 = random.randint(1, 11)
         correct_answer = num1 + num2
         buttons = [
-            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='numone'),
-            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='numtwo'),
-            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='numthree'),
+            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='num_1'),
+            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='num_2'),
+            types.InlineKeyboardButton(text=str(random.randint(2, 21)), callback_data='num_3'),
         ]
 
         correct_position = random.randint(0, len(buttons))
@@ -47,8 +66,30 @@ async def start(callback: types.CallbackQuery):
                                   '🔍 Для поиска используй кнопки ниже или напиши название мне',
                                   reply_markup=buttons)
 
+@router.callback_query(F.data == "instruction")
+async def instruction(callback: types.CallbackQuery):
+    await callback.message.answer(text=instructions)
 
-@router.message(F.text.lower() == "📖 меню")
+
+@router.callback_query(F.data == "video_guide")
+async def video_guide(callback: types.CallbackQuery):
+    await callback.message.bot.send_chat_action(
+        chat_id=callback.message.chat.id,
+        action=ChatAction.UPLOAD_VIDEO
+    )
+    url = "https://drive.google.com/uc?export=download&id=1MnruCvqhOgK6rhUlkQQnoqnf_qqAXj5Z"
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            result_bytes = await response.read()
+
+    await (callback.message.bot.send_video
+           (chat_id=callback.message.chat.id,
+            video=types.BufferedInputFile(
+                file=result_bytes,
+                filename="Инструкция.mp4", )))
+
+
+@router.message(F.text.lower() == "📖 меню" or F.data == "menu")
 async def menu(message: Message):
     buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
     date = datetime.now().strftime('%d.%m.%Y %H:%M')
@@ -56,7 +97,7 @@ async def menu(message: Message):
                          f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
 
-@router.callback_query(F.data.in_({"numone", "numtwo", "numthree"}))
+@router.callback_query(F.data.in_({"num_1", "num_2", "num_3"}))
 async def back(callback: types.CallbackQuery):
     await callback.message.delete()
     await callback.message.answer("Попробуй снова!")
@@ -75,7 +116,10 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "menu")
 async def menu_callback_handler(callback: types.CallbackQuery):
-    await callback.message.answer('Принято')
+    buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
+    date = datetime.now().strftime('%d.%m.%Y %H:%M')
+    await callback.message.answer(f"🆔 {callback.from_user.id}\n🕔 Дата регистрации {date}\n\n🍿"
+                                  f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
 
 @router.callback_query(F.data == "search")
