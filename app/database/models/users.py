@@ -7,6 +7,7 @@ from datetime import datetime
 
 Base = sqlalchemy.orm.declarative_base()
 
+
 class User(Base):
     __tablename__ = 'users'
 
@@ -15,6 +16,7 @@ class User(Base):
     name = Column(String)
     email = Column(String, nullable=True)
     join_date = Column(DateTime, default=datetime.now)
+
 
 # Создание экземпляра движка SQLite
 engine = create_engine('sqlite:///D:\\python\\KINOBT\\app\\database\\database.db', echo=True)
