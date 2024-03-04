@@ -45,3 +45,19 @@ admin_buttons = [
             types.InlineKeyboardButton(text='⚛️ Администраторы', callback_data='admins')
         ]
     ]
+
+
+public_buttons = [
+        [
+            types.InlineKeyboardButton(text='🕝 Активные каналы', callback_data='active_pub')
+        ],
+        [
+            types.InlineKeyboardButton(text='✅ Добавить канал', callback_data='add_pub'),
+            types.InlineKeyboardButton(text='⛔ Удалить канал', callback_data='delete_pub')
+        ],
+        [
+            types.InlineKeyboardButton(text='👈 Назад', callback_data='back')
+        ]
+    ]
+
+

@@ -6,14 +6,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from config import token_bot
 from app.handlers.user import start
-from app.handlers.admin import start_admin
+from app.handlers.admin import start_admin, channels
 
 TOKEN = token_bot
 bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 
 dp = Dispatcher()
 
-dp.include_routers(start.router, start_admin.router)
+dp.include_routers(start.router, channels.pub_router, channels.form_router, start_admin.router)
 
 
 async def main() -> None:

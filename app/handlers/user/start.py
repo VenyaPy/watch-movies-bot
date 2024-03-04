@@ -12,7 +12,8 @@ from config import admins
 from datetime import datetime
 import aiohttp
 from app.database.database import SessionLocal
-from app.database.requests.crud import add_or_update_user, get_all_user_ids
+from app.database.requests.crud import add_or_update_user, get_all_user_ids, find_public_ids
+from app.handlers.admin.channels import generate_pub
 
 router = Router()
 
@@ -21,6 +22,7 @@ router = Router()
 async def protect(message: types.Message):
     db = SessionLocal()
     user_ids = get_all_user_ids(db)
+    user_id = message.from_user.id
     if message.from_user.id not in user_ids:
         try:
             db = SessionLocal()
@@ -58,13 +60,40 @@ async def protect(message: types.Message):
 
 @router.callback_query(F.data == "correct")
 async def start(callback: types.CallbackQuery):
-    await callback.message.delete()
-    keyboard = types.ReplyKeyboardMarkup(keyboard=start_keyboard, resize_keyboard=True)
-    buttons = types.InlineKeyboardMarkup(inline_keyboard=start_menu)
-    await callback.message.answer("🤖 Бот запущен 👍️", reply_markup=keyboard)
-    await callback.message.answer('🍿 Привет, киноман!\n\n'
-                                  '🔍 Для поиска используй кнопки ниже или напиши название мне',
-                                  reply_markup=buttons)
+    db = SessionLocal()
+    public_ids = find_public_ids(db)
+    db.close()
+
+    user_id = callback.from_user.id
+    sub = True
+
+    for chat_id in public_ids:
+        try:
+            status = await callback.bot.get_chat_member(chat_id=chat_id, user_id=user_id)
+            if status.status not in ['creator', 'administrator', 'member']:
+                sub = False
+                break
+        except Exception as e:
+            print(f"Ошибка при проверке подписки пользователя {user_id} на паблик {chat_id}: {e}")
+            sub = False
+            break
+
+    if not sub:
+        return await generate_pub(callback)
+    else:
+        await callback.message.delete()
+        keyboard = types.ReplyKeyboardMarkup(keyboard=start_keyboard, resize_keyboard=True, one_time_keyboard=True)
+        buttons = types.InlineKeyboardMarkup(inline_keyboard=start_menu)
+        await callback.message.answer("🤖 Бот запущен 👍️", reply_markup=keyboard)
+        await callback.message.answer('🍿 Привет, киноман!\n\n'
+                                      '🔍 Для поиска используй кнопки ниже или напиши название мне',
+                                      reply_markup=buttons)
+
+
+@router.callback_query(F.data == "check_me")
+async def check_me(callback: types.CallbackQuery):
+    return await start(callback)
+
 
 @router.callback_query(F.data == "instruction")
 async def instruction(callback: types.CallbackQuery):

@@ -19,7 +19,7 @@ class User(Base):
 
 
 # Создание экземпляра движка SQLite
-engine = create_engine('sqlite:///D:\\python\\KINOBT\\app\\database\\database.db', echo=True)
+engine = create_engine('sqlite:////home/venya/Документы/python/KINOBT/app/database/database.db', echo=True)
 
 # Создание всех определенных таблиц
 Base.metadata.create_all(engine)
