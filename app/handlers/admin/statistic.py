@@ -13,6 +13,7 @@ from app.filters.chat_types import IsAdmin
 
 stat_router = Router()
 stat_router.message.filter(IsAdmin())
+stat_router.callback_query.filter(IsAdmin())
 
 
 @stat_router.callback_query(F.data == 'statistics')

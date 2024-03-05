@@ -1,4 +1,4 @@
-from aiogram import Bot, F, Router
+from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
@@ -9,11 +9,9 @@ from aiogram.types import (
 )
 from app.database.database import SessionLocal
 from app.filters.chat_types import IsAdmin
-from app.templates.keyboard.inline import news_menu, admin_buttons
-from app.handlers.admin.start_admin import admin_start
+from app.templates.keyboard.inline import news_menu
 from app.database.requests.crud import get_user_id
 import logging
-from config import token_bot
 
 
 
@@ -23,6 +21,7 @@ logging.basicConfig(level=logging.INFO,
 
 post_router = Router()
 post_router.message.filter(IsAdmin())
+post_router.callback_query.filter(IsAdmin())
 
 
 @post_router.callback_query(F.data == "newsletter")
@@ -43,7 +42,7 @@ class Form(StatesGroup):
 @post_router.callback_query(F.data == "add_post")
 async def text_post(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.add_text)
-    await message.answer(text="Введите текст будущего поста")
+    await message.answer(text="👇 Введите текст будущего поста 👇")
 
 
 @post_router.message(Form.add_text)
@@ -75,12 +74,19 @@ async def process_button_text(message: Message, state: FSMContext) -> None:
 async def process_button_url(message: Message, state: FSMContext) -> None:
     await state.update_data(add_button_url=message.text)
     await state.set_state(Form.done_post)
-    await message.answer(text='Введите "ГОТОВО" для добавления паблика')
+    don = [
+        [
+            InlineKeyboardButton(text='Завершить', callback_data='goto')
+        ]
+    ]
+    brake = InlineKeyboardMarkup(inline_keyboard=don)
+    await message.answer(text="Нажми для завершения 👇",
+                         reply_markup=brake)
 
 
 @post_router.message(Form.done_post)
 async def finish_post_creation(message: Message, state: FSMContext) -> None:
-    if message.text.lower() == "готово":
+    if F.data == "goto":
         data = await state.get_data()
         add_text = data.get("add_text", "")
         add_photo = data.get("add_photo", "")
@@ -102,10 +108,10 @@ async def finish_post_creation(message: Message, state: FSMContext) -> None:
         await message.answer_photo(photo=add_photo, caption=add_text, reply_markup=reply)
         done_button = [
             [
-                InlineKeyboardButton(text='Отправить пост', callback_data='send_post')
+                InlineKeyboardButton(text='🚀 Отправить пост', callback_data='send_post')
             ],
             [
-                InlineKeyboardButton(text='Удалить пост', callback_data='del_post')
+                InlineKeyboardButton(text='⛔ Удалить пост', callback_data='del_post')
             ]
         ]
         done_b = InlineKeyboardMarkup(inline_keyboard=done_button)
@@ -153,7 +159,7 @@ async def send_post(message: Message, state: FSMContext) -> None:
         for ids in user_ids:
             reply = InlineKeyboardMarkup(inline_keyboard=button)
             await message.bot.send_photo(chat_id=ids, photo=add_photo, caption=add_text, reply_markup=reply)
-        await message.answer('Пост успешно отправлен.')
+        await message.answer('✅ Пост успешно отправлен.')
 
 
 

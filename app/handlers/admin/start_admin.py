@@ -6,6 +6,7 @@ from aiogram.filters import Command
 
 adm_router = Router()
 adm_router.message.filter(IsAdmin())
+adm_router.callback_query.filter(IsAdmin())
 
 
 @adm_router.message(Command('start_admin'))

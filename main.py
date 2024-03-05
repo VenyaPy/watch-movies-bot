@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from config import token_bot
 from app.handlers.user import start
-from app.handlers.admin import start_admin, channels, statistic, newsletter
+from app.handlers.admin import start_admin, channels, statistic, newsletter, permissions
 import logging
 
 logging.basicConfig(level=logging.INFO,
@@ -21,7 +21,8 @@ dp.include_routers(start.router,
                    channels.form_router,
                    start_admin.adm_router,
                    statistic.stat_router,
-                   newsletter.post_router)
+                   newsletter.post_router,
+                   permissions.per_router)
 
 
 async def main() -> None:

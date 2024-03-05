@@ -8,12 +8,12 @@ from app.templates.keyboard.button import start_keyboard
 from app.templates.keyboard.inline import start_menu, menu_buttons
 from app.templates.text.user import instructions
 import random
-from config import admins
 from datetime import datetime
 import aiohttp
 from app.database.database import SessionLocal
 from app.database.requests.crud import add_or_update_user, get_all_user_ids, find_public_ids
 from app.handlers.admin.channels import generate_pub
+from app.database.requests.crud import show_admins
 
 router = Router()
 
@@ -32,6 +32,9 @@ async def protect(message: types.Message):
             db.close()
     else:
         pass
+
+    db = SessionLocal()
+    admins = show_admins(db=db)
 
     if message.from_user.id not in admins:
         num1 = random.randint(1, 11)
@@ -114,7 +117,8 @@ async def video_guide(callback: types.CallbackQuery):
            (chat_id=callback.message.chat.id,
             video=types.BufferedInputFile(
                 file=result_bytes,
-                filename="Инструкция.mp4", )))
+                filename="Инструкция.mp4"),
+            has_spoiler=True))
 
 
 @router.message(F.text.lower() == "📖 меню" or F.data == "menu")
@@ -137,9 +141,7 @@ async def filters(message: Message):
     await message.answer("В разработке...")
 
 
-@router.callback_query(F.data == "video_guide")
-async def video_guide_callback_handler(callback: types.CallbackQuery):
-    await callback.message.answer('Принято')
+
 
 
 @router.callback_query(F.data == "favorites")

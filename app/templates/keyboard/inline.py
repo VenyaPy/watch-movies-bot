@@ -60,23 +60,63 @@ public_buttons = [
 
 stat = [
     [
-        types.InlineKeyboardButton(text='Выгрузить пользователей', callback_data='users')
+        types.InlineKeyboardButton(text='📤 Выгрузить пользователей', callback_data='users')
     ],
     [
-        types.InlineKeyboardButton(text='Просмотры', callback_data='views'),
-        types.InlineKeyboardButton(text='Продажи', callback_data='money')
+        types.InlineKeyboardButton(text='👀 Просмотры', callback_data='views'),
+        types.InlineKeyboardButton(text='🤑 Продажи', callback_data='money')
     ],
     [
-        types.InlineKeyboardButton(text='Назад', callback_data='back_admin')
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_admin')
     ]
 ]
 
 news_menu = [
     [
-        types.InlineKeyboardButton(text='Добавить пост', callback_data='add_post')
+        types.InlineKeyboardButton(text='✅ Добавить пост', callback_data='add_post')
     ],
     [
-        types.InlineKeyboardButton(text='Назад', callback_data='back')
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_admin')
     ]
 ]
 
+
+l_add_admin = [
+    [
+        types.InlineKeyboardButton(text="👑 Администраторы", callback_data='m_admins'),
+        types.InlineKeyboardButton(text="🤑 VIP пользователи", callback_data='m_vip')
+    ]
+]
+
+add_admin_b = [
+    [
+        types.InlineKeyboardButton(text="📖 Список админов", callback_data='list_admins')
+    ],
+    [
+        types.InlineKeyboardButton(text="✅ Добавить админа", callback_data="add_admin"),
+        types.InlineKeyboardButton(text="⛔ Удалить админа", callback_data="del_admin")
+    ],
+    [
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_admin')
+    ]
+]
+
+add_vip = [
+    [
+        types.InlineKeyboardButton(text="📖 Список VIP", callback_data='list_vip')
+    ],
+    [
+        types.InlineKeyboardButton(text="✅ Добавить VIP", callback_data="add_vip"),
+        types.InlineKeyboardButton(text="⛔ Удалить VIP", callback_data="del_vip")
+    ],
+    [
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_admin')
+    ]
+]
+
+
+back_admin = [
+    [
+        types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_admin')
+    ]
+]

@@ -16,9 +16,11 @@ from app.filters.chat_types import IsAdmin
 
 pub_router = Router()
 pub_router.message.filter(IsAdmin())
+pub_router.callback_query.filter(IsAdmin())
 
 form_router = Router()
 form_router.message.filter(IsAdmin())
+form_router.callback_query.filter(IsAdmin())
 
 
 @form_router.callback_query(F.data == 'active_pub')

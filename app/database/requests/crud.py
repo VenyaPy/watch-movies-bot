@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.database.models.users import User
 from app.database.models.publics import Publics
+from app.database.models.admins import Admins
 
 
 def add_or_update_user(db: Session, user_id: int, username: str):
@@ -21,6 +22,24 @@ def add_public(db: Session, id_pub: int, url_pub: str):
     db.add(new_public)
     db.commit()
     print("Паблик добавлен")
+
+
+def add_admin_bd(db: Session, user_id: int):
+    new_admin = Admins(user_id=user_id)
+    db.add(new_admin)
+    db.commit()
+    print("Админ добавлен")
+
+
+def show_admins(db: Session):
+    all_admins = db.query(Admins).all()
+    admin_ids = [admins.user_id for admins in all_admins]
+    return admin_ids
+
+
+def del_admins_bd(db: Session, user_id: int):
+    db.query(Admins).filter(Admins.user_id == user_id).delete()
+    db.commit()
 
 
 def find_public(db: Session):
