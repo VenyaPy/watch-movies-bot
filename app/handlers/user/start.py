@@ -143,6 +143,54 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
     await callback.message.answer('Принято')
 
 
+@router.callback_query(F.data == "favorites")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Че тыкаешь на нерабочие кнопки?')
+
+
+@router.callback_query(F.data == "random")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('.')
+
+
+@router.callback_query(F.data == "filter")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Ты не проходишь...')
+
+
+@router.callback_query(F.data == "promo")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Вот промокод на 1.000.000$: JHD8234HUIRH0897HUDFS832')
+
+
+@router.callback_query(F.data == "share")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Открыт доступ ко всем фото для служб ФСБ. Дожидайтесь проверки...')
+
+
+@router.callback_query(F.data == "vip_info")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Россия не для VIP\nРаботает только для любой другой страны ):')
+
+
+@router.callback_query(F.data == "support")
+async def video_guide_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Всё будет хорошо, не переживай!')
+
+
+@router.callback_query(F.data == "search")
+async def search_callback_handler(callback: types.CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer('Идёт поиск ближайших шлярв г. Алзамай, ул. Вокзальная')
+
+
 @router.callback_query(F.data == "menu")
 async def menu_callback_handler(callback: types.CallbackQuery):
     buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
@@ -150,7 +198,3 @@ async def menu_callback_handler(callback: types.CallbackQuery):
     await callback.message.answer(f"🆔 {callback.from_user.id}\n🕔 Дата регистрации {date}\n\n🍿"
                                   f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
-
-@router.callback_query(F.data == "search")
-async def search_callback_handler(callback: types.CallbackQuery):
-    await callback.message.answer('Принято')

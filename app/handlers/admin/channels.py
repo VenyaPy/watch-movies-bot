@@ -1,19 +1,8 @@
-import asyncio
-import logging
-import sys
-from os import getenv
-from typing import Any, Dict
-
-from aiogram import Bot, Dispatcher, F, Router, html
-from aiogram.enums import ParseMode
-from aiogram.filters import Command, CommandStart
+from aiogram import Bot, F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import (
-    KeyboardButton,
     Message,
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove,
     InlineKeyboardMarkup,
     CallbackQuery,
     InlineKeyboardButton
@@ -22,10 +11,14 @@ from app.templates.keyboard.inline import public_buttons
 from app.database.database import SessionLocal
 from app.database.requests.crud import add_public, find_public, delete_all_publics
 from app.handlers.admin.start_admin import admin_start
+from app.filters.chat_types import IsAdmin
 
 
 pub_router = Router()
+pub_router.message.filter(IsAdmin())
+
 form_router = Router()
+form_router.message.filter(IsAdmin())
 
 
 @form_router.callback_query(F.data == 'active_pub')

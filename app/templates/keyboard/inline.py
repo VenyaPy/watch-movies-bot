@@ -1,6 +1,4 @@
 from aiogram import types
-from aiogram.utils.keyboard import ReplyKeyboardBuilder, InlineKeyboardBuilder
-import random
 
 start_menu = [
     [
@@ -56,8 +54,36 @@ public_buttons = [
             types.InlineKeyboardButton(text='⛔ Удалить канал', callback_data='delete_pub')
         ],
         [
-            types.InlineKeyboardButton(text='👈 Назад', callback_data='back')
+            types.InlineKeyboardButton(text='👈 Назад', callback_data='back_admin')
         ]
     ]
 
+stat = [
+    [
+        types.InlineKeyboardButton(text='Выгрузить пользователей', callback_data='users')
+    ],
+    [
+        types.InlineKeyboardButton(text='Просмотры', callback_data='views'),
+        types.InlineKeyboardButton(text='Продажи', callback_data='money')
+    ],
+    [
+        types.InlineKeyboardButton(text='Назад', callback_data='back_admin')
+    ]
+]
+
+news_menu = [
+    [
+        types.InlineKeyboardButton(text='Просмотр поста', callback_data='show_post')
+    ],
+    [
+        types.InlineKeyboardButton(text='Добавить пост', callback_data='add_post'),
+        types.InlineKeyboardButton(text='Удалить пост', callback_data='del_post')
+    ],
+    [
+        types.InlineKeyboardButton(text='Отправить пост', callback_data='send_post')
+    ],
+    [
+        types.InlineKeyboardButton(text='Назад', callback_data='back')
+    ]
+]
 

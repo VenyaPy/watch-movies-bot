@@ -38,3 +38,10 @@ def find_public_ids(db: Session):
     all_publics = db.query(Publics).all()
     public_ids = [public.id_pub for public in all_publics]
     return public_ids
+
+
+def find_user(db: Session):
+    all_users = db.query(User).all()
+    user_details = [f"{user.name}: {user.user_id}" for user in all_users]
+    return user_details
+
