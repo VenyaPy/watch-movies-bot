@@ -73,14 +73,7 @@ stat = [
 
 news_menu = [
     [
-        types.InlineKeyboardButton(text='Просмотр поста', callback_data='show_post')
-    ],
-    [
-        types.InlineKeyboardButton(text='Добавить пост', callback_data='add_post'),
-        types.InlineKeyboardButton(text='Удалить пост', callback_data='del_post')
-    ],
-    [
-        types.InlineKeyboardButton(text='Отправить пост', callback_data='send_post')
+        types.InlineKeyboardButton(text='Добавить пост', callback_data='add_post')
     ],
     [
         types.InlineKeyboardButton(text='Назад', callback_data='back')

@@ -9,9 +9,16 @@ from aiogram.types import (
 )
 from app.database.database import SessionLocal
 from app.filters.chat_types import IsAdmin
-from app.templates.keyboard.inline import news_menu
+from app.templates.keyboard.inline import news_menu, admin_buttons
 from app.handlers.admin.start_admin import admin_start
-from app.database.requests.crud import find_user
+from app.database.requests.crud import get_user_id
+import logging
+from config import token_bot
+
+
+
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s %(levelname)s %(message)s")
 
 
 post_router = Router()
@@ -30,6 +37,7 @@ class Form(StatesGroup):
     add_button_text = State()
     add_button_url = State()
     done_post = State()
+    send_post = State()
 
 
 @post_router.callback_query(F.data == "add_post")
@@ -47,10 +55,13 @@ async def process_text(message: Message, state: FSMContext) -> None:
 
 @post_router.message(Form.add_photo, F.photo)
 async def process_photo(message: Message, state: FSMContext) -> None:
-    photo_file_id = message.photo[-1].file_id
-    await state.update_data(add_photo=photo_file_id)
-    await state.set_state(Form.add_button_text)
-    await message.answer('Добавьте текст для кнопки')
+    try:
+        photo_file_id = message.photo[-1].file_id
+        await state.update_data(add_photo=photo_file_id)
+        await state.set_state(Form.add_button_text)
+        await message.answer('Добавьте текст для кнопки')
+    except Exception as e:
+        print(e)
 
 
 @post_router.message(Form.add_button_text)
@@ -63,89 +74,86 @@ async def process_button_text(message: Message, state: FSMContext) -> None:
 @post_router.message(Form.add_button_url)
 async def process_button_url(message: Message, state: FSMContext) -> None:
     await state.update_data(add_button_url=message.text)
-    # Предлагаем пользователю завершить создание поста
-    await message.answer('Пост готов к публикации. Нажмите "Завершить", чтобы продолжить.',
-                          reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-                              [InlineKeyboardButton(text="Завершить", callback_data="finish_post_creation")]
-                          ]))
-
-
-@post_router.callback_query(F.data == "finish_post_creation")
-async def finish_post_creation(callback_query: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(Form.done_post)
-    # Вызываем функцию для генерации поста или предоставляем пользователю следующие инструкции
-    await generate_post(callback_query.message, state)
+    await message.answer(text='Введите "ГОТОВО" для добавления паблика')
 
 
 @post_router.message(Form.done_post)
-async def generate_post(message: Message, state: FSMContext) -> None:
-    data = await state.get_data()
-    add_text = data.get("add_text", "")
-    add_photo = data.get("add_photo", [])
-    add_button_text = data.get("add_button_text", "")
-    add_button_url = data.get("add_button_url", "")
+async def finish_post_creation(message: Message, state: FSMContext) -> None:
+    if message.text.lower() == "готово":
+        data = await state.get_data()
+        add_text = data.get("add_text", "")
+        add_photo = data.get("add_photo", "")
+        add_button_text = data.get("add_button_text", "")
+        add_button_url = data.get("add_button_url", "")
 
-    button = [
-        [InlineKeyboardButton(text=add_button_text, url=add_button_url)]
-    ]
+        button = [
+            [InlineKeyboardButton(text=add_button_text, url=add_button_url)]
+        ]
 
-    post_data = {
-        "text": add_text,
-        "photo": add_photo[-1] if add_photo else None,  # предполагаем, что photo это список ID фото, берем последнее
-        "button": button
-    }
+        post_data = {
+            "text": add_text,
+            "photo": add_photo,
+            "button": button
+        }
 
-    await state.update_data(final_post=post_data)
-    reply = InlineKeyboardMarkup(inline_keyboard=news_menu)
-    await message.answer(text='Удалить, Просмотреть, либо Отправить пост?', reply_markup=reply)
+        await state.update_data(final_post=post_data)
+        reply = InlineKeyboardMarkup(inline_keyboard=button)
+        await message.answer_photo(photo=add_photo, caption=add_text, reply_markup=reply)
+        done_button = [
+            [
+                InlineKeyboardButton(text='Отправить пост', callback_data='send_post')
+            ],
+            [
+                InlineKeyboardButton(text='Удалить пост', callback_data='del_post')
+            ]
+        ]
+        done_b = InlineKeyboardMarkup(inline_keyboard=done_button)
+        await message.answer(text="Что делаем с постом?", reply_markup=done_b)
+        await state.set_state(Form.send_post)
 
 
 @post_router.callback_query(F.data == 'del_post')
-async def delete_post(message: Message, state: FSMContext) -> None:
-    await state.get_data()
-    await state.clear()
-    return await admin_start(message)
-
+async def cancel_handler(message: Message, state: FSMContext) -> None:
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    try:
+        await state.clear()
+        await message.answer(
+            "Пост удален"
+        )
+    except Exception as e:
+        print(e)
 
 @post_router.callback_query(F.data == 'send_post')
-async def send_post(callback_query: CallbackQuery, state: FSMContext) -> None:
-    data = await state.get_data()
-    final_post = data.get('final_post')
+async def send_post(message: Message, state: FSMContext) -> None:
+    if F.data == 'send_post':
+        data = await state.get_data()
+        add_text = data.get("add_text", "")
+        add_photo = data.get("add_photo", "")
+        add_button_text = data.get("add_button_text", "")
+        add_button_url = data.get("add_button_url", "")
 
-    user_ids = find_user(db=SessionLocal())
+        button = [
+            [InlineKeyboardButton(text=add_button_text, url=add_button_url)]
+        ]
 
-    for user_id in user_ids:
-        if final_post.get('photo'):
-            button = InlineKeyboardMarkup(inline_keyboard=final_post['button'])
-            await callback_query.message.bot.send_photo(chat_id=user_id,
-                                                        photo=final_post['photo'],
-                                                        caption=final_post['text'],
-                                                        reply_markup=button)
-        else:
-            button = InlineKeyboardMarkup(inline_keyboard=final_post['button'])
-            await callback_query.message.bot.send_message(chat_id=user_id,
-                                                          text=final_post['text'],
-                                                          reply_markup=button)
+        post_data = {
+            "text": add_text,
+            "photo": add_photo,
+            "button": button
+        }
 
-    await state.clear()
+        await state.update_data(final_post=post_data)
+
+        db = SessionLocal()
+        user_ids = get_user_id(db=db)
+
+        for ids in user_ids:
+            reply = InlineKeyboardMarkup(inline_keyboard=button)
+            await message.bot.send_photo(chat_id=ids, photo=add_photo, caption=add_text, reply_markup=reply)
+        await message.answer('Пост успешно отправлен.')
 
 
-@post_router.callback_query(F.data == 'show_post')
-async def post(callback_query: CallbackQuery, state: FSMContext) -> None:
-    data = await state.get_data()
-    final_post = data.get('final_post')
 
-    if final_post and 'photo' in final_post:
-        button = InlineKeyboardMarkup(inline_keyboard=final_post['button'])
-        await callback_query.message.bot.send_photo(chat_id=callback_query.from_user.id,
-                                                    photo=final_post['photo'],
-                                                    caption=final_post['text'],
-                                                    reply_markup=button)
-    elif final_post:
-        button = InlineKeyboardMarkup(inline_keyboard=final_post['button'])
-        await callback_query.message.bot.send_message(chat_id=callback_query.from_user.id,
-                                                      text=final_post['text'],
-                                                      reply_markup=button)
-    else:
-        # Если final_post не найден, отправляем сообщение об ошибке
-        await callback_query.answer('Пост не найден.', show_alert=True)

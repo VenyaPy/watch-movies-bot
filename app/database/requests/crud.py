@@ -45,3 +45,9 @@ def find_user(db: Session):
     user_details = [f"{user.name}: {user.user_id}" for user in all_users]
     return user_details
 
+
+def get_user_id(db: Session):
+    all_users = db.query(User).all()
+    for user in all_users:
+        yield user.user_id
+

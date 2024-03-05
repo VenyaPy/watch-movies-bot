@@ -22,7 +22,6 @@ router = Router()
 async def protect(message: types.Message):
     db = SessionLocal()
     user_ids = get_all_user_ids(db)
-    user_id = message.from_user.id
     if message.from_user.id not in user_ids:
         try:
             db = SessionLocal()
