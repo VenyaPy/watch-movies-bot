@@ -4,15 +4,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from config import token_bot
 from app.handlers.user import start
-from app.handlers.admin import start_admin, channels, statistic, newsletter, permissions
-import logging
-
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s %(levelname)s %(message)s")
-
+from app.handlers.admin import (start_admin,
+                                channels,
+                                statistic,
+                                newsletter,
+                                permissions)
 
 TOKEN = token_bot
-bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(TOKEN, parse_mode=ParseMode.HTML, disable_web_page_preview=False)
 
 dp = Dispatcher()
 
@@ -30,5 +29,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())

@@ -10,22 +10,20 @@ start_menu = [
 
 menu_buttons = [
         [
-            types.InlineKeyboardButton(text='💡 Инструкция', callback_data='instruction'),
-            types.InlineKeyboardButton(text='⭐ Избранное', callback_data='favorites')
+            types.InlineKeyboardButton(text='💡 Инструкция', callback_data='instruction')
         ],
         [
-            types.InlineKeyboardButton(text='🎲 Рандом', callback_data='random'),
-            types.InlineKeyboardButton(text='⚙️ Фильтр', callback_data='filter')
-        ],
-        [
+            types.InlineKeyboardButton(text='💝 Купить VIP', callback_data='vip_info'),
             types.InlineKeyboardButton(text='🔠 Промокоды', callback_data='promo'),
-            types.InlineKeyboardButton(text='↪️ Поделиться', callback_data='share')
+
         ],
         [
-            types.InlineKeyboardButton(text='💝 VIP инфо', callback_data='vip_info'),
+            types.InlineKeyboardButton(text='↪️ Поделиться', url='https://t.me/WildFilm_bot?startgroup=new'),
             types.InlineKeyboardButton(text='💁‍♂️ Поддержка', callback_data='support')
         ],
-        [types.InlineKeyboardButton(text='🔍 Начать поиск', callback_data='search')]
+        [
+            types.InlineKeyboardButton(text='🔍 Начать поиск', callback_data='search')
+        ]
     ]
 
 
@@ -36,11 +34,13 @@ admin_buttons = [
         ],
         [
             types.InlineKeyboardButton(text='✉️ Рассылка', callback_data='newsletter'),
-            types.InlineKeyboardButton(text='💵 VIP', callback_data='vip')
+            types.InlineKeyboardButton(text='⚛️ Администраторы', callback_data='admins')
         ],
         [
-            types.InlineKeyboardButton(text='⚙️ Настроить', callback_data='setting'),
-            types.InlineKeyboardButton(text='⚛️ Администраторы', callback_data='admins')
+            types.InlineKeyboardButton(text='⚙️ Настроить', callback_data='setting')
+        ],
+        [
+            types.InlineKeyboardButton(text='👻 Пользовательское меню', callback_data='menu')
         ]
     ]
 
@@ -118,5 +118,45 @@ add_vip = [
 back_admin = [
     [
         types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_admin')
+    ]
+]
+
+
+back_user = [
+    [
+        types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_user')
+    ]
+]
+
+
+vip_user_menu = [
+    [
+        types.InlineKeyboardButton(text="🔠 Ввести промокод", callback_data='write_promo')
+    ],
+    [
+        types.InlineKeyboardButton(text="💳 VIP Навсегда = 3.000 RUB", callback_data='Always_VIP')
+    ],
+    [
+        types.InlineKeyboardButton(text="💳 VIP 6 месяцев = 700 RUB", callback_data='6_VIP')
+    ],
+    [
+        types.InlineKeyboardButton(text="🔥 VIP 3 месяца = 300 RUB (-100 RUB)", callback_data='3_VIP')
+    ],
+    [
+        types.InlineKeyboardButton(text="💳 VIP 2 месяца = 300 RUB", callback_data='2_VIP')
+    ],
+    [
+        types.InlineKeyboardButton(text="🔥 VIP 1 месяц = 100 RUB (-50 RUB)", callback_data='1_VIP')
+    ],
+    [
+        types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_user')
+    ]
+]
+
+
+promokode_m = [
+    [
+        types.InlineKeyboardButton(text='🚀 Ввести промокод', callback_data='promis_get'),
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_user')
     ]
 ]

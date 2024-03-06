@@ -17,6 +17,25 @@ def get_all_user_ids(db: Session) -> list:
     return user_ids
 
 
+def get_user_join_date(db: Session, user_id: int) -> str:
+    user_data = db.query(User).filter(User.user_id == user_id).first()
+    if user_data:
+        formatted_date = user_data.join_date.strftime('%d.%m.%Y %H:%M')
+        return formatted_date
+    else:
+        return "Пользователь не найден"
+
+
+def get_user_count(db: Session) -> int:
+    user_count = db.query(User).count()
+    return user_count
+
+
+def get_public_count(db: Session) -> int:
+    public_count = db.query(Publics).count()
+    return public_count
+
+
 def add_public(db: Session, id_pub: int, url_pub: str):
     new_public = Publics(id_pub=id_pub, url_pub=url_pub)
     db.add(new_public)

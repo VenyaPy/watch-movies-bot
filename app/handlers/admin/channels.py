@@ -7,9 +7,9 @@ from aiogram.types import (
     CallbackQuery,
     InlineKeyboardButton
 )
-from app.templates.keyboard.inline import public_buttons
+from app.templates.keyboard.inline import public_buttons, back_admin
 from app.database.database import SessionLocal
-from app.database.requests.crud import add_public, find_public, delete_all_publics
+from app.database.requests.crud import add_public, find_public, delete_all_publics, get_public_count
 from app.handlers.admin.start_admin import admin_start
 from app.filters.chat_types import IsAdmin
 
@@ -63,15 +63,19 @@ class Form(StatesGroup):
 @form_router.callback_query(F.data == 'channels')
 async def public(callback: CallbackQuery):
     await callback.message.delete()
+
+    db = SessionLocal()
+    publics = get_public_count(db=db)
+
     reply_markup = InlineKeyboardMarkup(inline_keyboard=public_buttons)
-    await callback.message.answer(text='Меню подписок:',
+    await callback.message.answer(text=f'🤖 Всего пабликов добавлено: {publics}\n\nУправление👇',
                          reply_markup=reply_markup)
 
 
 @form_router.callback_query(F.data == 'add_pub')
-async def begin_add(message: Message, state: FSMContext) -> None:
+async def begin_add(callback: CallbackQuery, state: FSMContext) -> None:
     await state.set_state(Form.id_pub)
-    await message.answer(text="Введите ID паблика")
+    await callback.message.answer(text="Введите ID паблика")
 
 
 @form_router.message(Form.id_pub)
@@ -99,7 +103,8 @@ async def process_done(message: Message, state: FSMContext) -> None:
         add_public(db=db, id_pub=id_pub, url_pub=url_pub)
         db.close()
 
-        await message.answer("Спасибо. Паблик добавлен.")
+        reply = InlineKeyboardMarkup(inline_keyboard=back_admin)
+        await message.answer("Спасибо. Паблик добавлен.", reply_markup=reply)
 
 
 

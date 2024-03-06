@@ -13,7 +13,7 @@ adm_router.callback_query.filter(IsAdmin())
 async def admin_start(message: Message):
     user = message.from_user.first_name
     reply_markup = types.InlineKeyboardMarkup(inline_keyboard=admin_buttons)
-    await message.answer(f"👑 {user}, добро пожаловать в админ-меню!\n\nТвои функции👇",
+    await message.answer(f"👑 <b>{user}, добро пожаловать в админ-меню!</b>\n\nТвои функции👇\n",
                          reply_markup=reply_markup)
 
 
@@ -24,3 +24,7 @@ async def back_adm(callback: CallbackQuery):
     await callback.message.edit_text(f"👑 {user}, добро пожаловать в админ-меню!\n\nТвои функции👇",
                                      reply_markup=reply_markup)
 
+
+@adm_router.callback_query(F.data == "setting")
+async def setting(callback: CallbackQuery):
+    await callback.message.answer(text="В процессе реализации...")
