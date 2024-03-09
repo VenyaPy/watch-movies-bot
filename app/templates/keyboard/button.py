@@ -6,5 +6,12 @@ start_keyboard = [
     ]
 
 
+find = [
+    [
+        types.KeyboardButton(text='🔍 Поиск', switch_inline_query_current_chat="@WildKino_bot ")
+    ]
+]
+
+
 
 

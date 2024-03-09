@@ -9,9 +9,11 @@ from app.handlers.admin import (start_admin,
                                 statistic,
                                 newsletter,
                                 permissions)
+from app.utils.cdn import cdn
+
 
 TOKEN = token_bot
-bot = Bot(TOKEN, parse_mode=ParseMode.HTML, disable_web_page_preview=False)
+bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 
 dp = Dispatcher()
 
@@ -21,7 +23,8 @@ dp.include_routers(start.router,
                    start_admin.adm_router,
                    statistic.stat_router,
                    newsletter.post_router,
-                   permissions.per_router)
+                   permissions.per_router,
+                   cdn.cdn_rou)
 
 
 async def main() -> None:
@@ -30,3 +33,4 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
+

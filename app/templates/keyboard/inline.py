@@ -5,7 +5,9 @@ start_menu = [
         types.InlineKeyboardButton(text='ℹ️ Видео-гайд', callback_data='video_guide'),
         types.InlineKeyboardButton(text='📖 Меню', callback_data='menu')
     ],
-    [types.InlineKeyboardButton(text='🔍 Начать поиск', callback_data='search')]
+    [
+        types.InlineKeyboardButton(text='🔍 Начать поиск', switch_inline_query_current_chat="")
+    ]
 ]
 
 menu_buttons = [
@@ -22,7 +24,7 @@ menu_buttons = [
             types.InlineKeyboardButton(text='💁‍♂️ Поддержка', callback_data='support')
         ],
         [
-            types.InlineKeyboardButton(text='🔍 Начать поиск', callback_data='search')
+            types.InlineKeyboardButton(text='🔍 Начать поиск', switch_inline_query_current_chat="")
         ]
     ]
 
@@ -160,3 +162,15 @@ promokode_m = [
         types.InlineKeyboardButton(text='👈 Назад', callback_data='back_user')
     ]
 ]
+
+
+chose = [
+    [
+        types.InlineKeyboardButton(text="Фильмы", callback_data='films'),
+        types.InlineKeyboardButton(text="Сериалы", callback_data='tv_serials'),
+    ],
+    [
+        types.InlineKeyboardButton(text='👈 Назад', callback_data='back_user')
+    ]
+]
+

@@ -18,6 +18,7 @@ from app.handlers.admin.channels import generate_pub
 from app.database.requests.crud import show_admins
 
 
+
 router = Router()
 
 
@@ -162,10 +163,7 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
     await callback.message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
 
 
-@router.callback_query(F.data == "search")
-async def search_callback_handler(callback: types.CallbackQuery):
-    await callback.message.delete()
-    await callback.message.answer('♻️ Функция в процессе реализации')
+
 
 
 @router.callback_query(F.data == "menu")
