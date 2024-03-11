@@ -23,11 +23,25 @@ form_router.message.filter(IsAdmin())
 form_router.callback_query.filter(IsAdmin())
 
 
+class SessionManager:
+    def __init__(self):
+        self.db = None
+
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
+
+
 @form_router.callback_query(F.data == 'active_pub')
 async def generate_pub(callback: CallbackQuery):
     await callback.message.delete()
-    db = SessionLocal()
-    public_urls = find_public(db=db)
+
+    with SessionManager() as db:
+        public_urls = find_public(db=db)
+
     if public_urls:
         keyboard_publics = [
                 [InlineKeyboardButton(text="Подпишись👈", url=url)]
@@ -36,7 +50,7 @@ async def generate_pub(callback: CallbackQuery):
         keyboard_publics.append([InlineKeyboardButton(text="Проверить подписку", callback_data='check_me')])
         buttons = InlineKeyboardMarkup(inline_keyboard=keyboard_publics)
         await callback.message.answer('⚠️ Пожалуйста, подпишитесь на все паблики для использования бота.',
-                             reply_markup=buttons)
+                                      reply_markup=buttons)
     else:
         await callback.message.answer("Извините, у вас ещё нет пабликов")
 
@@ -49,8 +63,8 @@ async def back(callback: CallbackQuery, message):
 
 @form_router.callback_query(F.data == 'delete_pub')
 async def delete_pub(callback: CallbackQuery):
-    db = SessionLocal()
-    delete_all_publics(db=db)
+    with SessionManager() as db:
+        delete_all_publics(db=db)
     await callback.message.answer("Все паблики успешно удалены!")
 
 
@@ -64,8 +78,8 @@ class Form(StatesGroup):
 async def public(callback: CallbackQuery):
     await callback.message.delete()
 
-    db = SessionLocal()
-    publics = get_public_count(db=db)
+    with SessionManager() as db:
+        publics = get_public_count(db=db)
 
     reply_markup = InlineKeyboardMarkup(inline_keyboard=public_buttons)
     await callback.message.answer(text=f'🤖 Всего пабликов добавлено: {publics}\n\nУправление👇',
@@ -88,7 +102,7 @@ async def process_id(message: Message, state: FSMContext) -> None:
 @form_router.message(Form.url_pub)
 async def process_url(message: Message, state: FSMContext) -> None:
     await state.update_data(url_pub=message.text)
-    await state.set_state(Form.done)  # Переход к состоянию подтверждения
+    await state.set_state(Form.done)
     await message.answer(text='Введите "ГОТОВО" для добавления паблика')
 
 
@@ -99,9 +113,10 @@ async def process_done(message: Message, state: FSMContext) -> None:
         id_pub = int(user_data['id_pub'])
         url_pub = user_data['url_pub']
 
-        db = SessionLocal()
-        add_public(db=db, id_pub=id_pub, url_pub=url_pub)
-        db.close()
+        with SessionManager() as db:
+            add_public(db=db, id_pub=id_pub, url_pub=url_pub)
+
+        await state.clear()
 
         reply = InlineKeyboardMarkup(inline_keyboard=back_admin)
         await message.answer("Спасибо. Паблик добавлен.", reply_markup=reply)

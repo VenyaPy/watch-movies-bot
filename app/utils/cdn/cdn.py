@@ -14,14 +14,11 @@ cdn_rou = Router()
 
 async def fetch_movies(query):
     try:
-        # Проверяем, является ли запрос ссылкой на КиноПоиск
         kp_link_match = re.match(r'https?://www\.kinopoisk\.ru/(series|film)/(\d+)', query)
         if kp_link_match:
-            # Извлекаем ID из ссылки
             kp_id = kp_link_match.group(2)
             url = f"https://apivb.info/api/videos.json?id_kp={kp_id}&token={api_hbtv}"
         else:
-            # Дополнительная проверка на формат kpXXXXXX
             kp_match = re.match(r'kp(\d+)', query)
             if kp_match:
                 kp_id = kp_match.group(1)

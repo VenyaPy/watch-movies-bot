@@ -1,5 +1,3 @@
-import time
-
 from aiogram import F, Router
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -14,12 +12,19 @@ from app.filters.chat_types import IsAdmin
 from app.templates.keyboard.inline import news_menu, back_admin
 from app.handlers.admin.start_admin import back_adm
 from app.database.requests.crud import get_user_id
-import logging
 
 
+class SessionManager:
+    def __init__(self):
+        self.db = None
 
-logging.basicConfig(level=logging.INFO,
-                    format="%(asctime)s %(levelname)s %(message)s")
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
+
 
 
 post_router = Router()
@@ -62,7 +67,6 @@ async def process_photo(message: Message, state: FSMContext) -> None:
         if message.photo:
             media_file_id = message.photo[-1].file_id
             media_type = 'photo'
-            # Проверка на видео
         elif message.video:
             media_file_id = message.video.file_id
             media_type = 'video'
@@ -170,8 +174,8 @@ async def send_post(callback: CallbackQuery, state: FSMContext) -> None:
 
         await state.update_data(final_post=post_data)
 
-        db = SessionLocal()
-        user_ids = get_user_id(db=db)
+        with SessionManager() as db:
+            user_ids = get_user_id(db=db)
 
         for ids in user_ids:
             if media_type == 'photo':
@@ -179,6 +183,7 @@ async def send_post(callback: CallbackQuery, state: FSMContext) -> None:
             elif media_type == 'video':
                 await callback.bot.send_video(chat_id=ids, video=add_media, caption=add_text, reply_markup=reply)
 
+        await state.clear()
         return await back_adm(callback)
 
 

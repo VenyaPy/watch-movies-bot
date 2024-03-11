@@ -1,10 +1,8 @@
 import os
-from aiogram import Bot, F, Router
+from aiogram import F, Router
 from aiogram.types import (
-    Message,
     InlineKeyboardMarkup,
     CallbackQuery,
-    InlineKeyboardButton,
     FSInputFile
 )
 from app.database.requests.crud import find_user, get_user_count
@@ -18,12 +16,24 @@ stat_router.message.filter(IsAdmin())
 stat_router.callback_query.filter(IsAdmin())
 
 
+class SessionManager:
+    def __init__(self):
+        self.db = None
+
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
+
+
 @stat_router.callback_query(F.data == 'statistics')
 async def statistic(callback: CallbackQuery):
     await callback.message.delete()
     reply_mark = InlineKeyboardMarkup(inline_keyboard=stat)
-    db = SessionLocal()
-    count_user = get_user_count(db=db)
+    with SessionManager() as db:
+        count_user = get_user_count(db=db)
     await callback.message.answer(text=f'👥 Всего пользователей: {count_user}\n\n💻 Нагрузка сервера: -'
                                        f'\n💿 Процессор: -\n💾 Оперативная память: -',
                                   reply_markup=reply_mark)

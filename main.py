@@ -18,12 +18,12 @@ bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
 dp = Dispatcher()
 
 dp.include_routers(start.router,
+                   start_admin.adm_router,
+                   permissions.per_router,
+                   statistic.stat_router,
                    channels.pub_router,
                    channels.form_router,
-                   start_admin.adm_router,
-                   statistic.stat_router,
                    newsletter.post_router,
-                   permissions.per_router,
                    cdn.cdn_rou,
                    payment.pay)
 

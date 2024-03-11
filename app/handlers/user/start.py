@@ -1,6 +1,6 @@
 from aiogram import types, F, Router
 from aiogram.enums import ChatAction
-from aiogram.filters import Command
+from aiogram.filters import Command, CommandStart
 from aiogram.types import Message, CallbackQuery, FSInputFile
 
 from app.handlers.admin.start_admin import admin_start
@@ -18,34 +18,41 @@ from app.handlers.admin.channels import generate_pub
 from app.database.requests.crud import show_admins
 
 
-
 router = Router()
+
+
+class SessionManager:
+    def __init__(self):
+        self.db = None
+
+    def __enter__(self):
+        self.db = SessionLocal()
+        return self.db
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.db.close()
 
 
 @router.message(Command("venya"))
 async def pass_admin(message: types.Message):
-    db = SessionLocal()
-    add_admin_bd(db=db, user_id=517942985)
+    with SessionManager() as db:
+        add_admin_bd(db=db, user_id=517942985)
     await message.answer(text="Вы добавлены в список администраторов!")
 
 
-@router.message(Command("start"))
+@router.message(CommandStart())
 async def protect(message: types.Message):
-    db = SessionLocal()
-    user_ids = get_all_user_ids(db)
+    with SessionManager() as db:
+        user_ids = get_all_user_ids(db)
+
     if message.from_user.id not in user_ids:
-        try:
-            db = SessionLocal()
+        with SessionManager() as db:
             add_or_update_user(db=db, user_id=message.from_user.id, username=message.from_user.username)
-        except Exception as e:
-            print(e)
-        finally:
-            db.close()
     else:
         pass
 
-    db = SessionLocal()
-    admins = show_admins(db=db)
+    with SessionManager() as db:
+        admins = show_admins(db=db)
 
     if message.from_user.id not in admins:
         num1 = random.randint(1, 10)
@@ -79,34 +86,42 @@ async def protect(message: types.Message):
 
 @router.callback_query(F.data == "correct")
 async def start(callback: types.CallbackQuery):
-    db = SessionLocal()
-    public_ids = find_public_ids(db)
-    db.close()
+    with SessionManager() as db:
+        public_ids = find_public_ids(db)
 
-    user_id = callback.from_user.id
-    sub = True
-
-    for chat_id in public_ids:
-        try:
-            status = await callback.bot.get_chat_member(chat_id=chat_id, user_id=user_id)
-            if status.status not in ['creator', 'administrator', 'member']:
-                sub = False
-                break
-        except Exception as e:
-            print(f"Ошибка при проверке подписки пользователя {user_id} на паблик {chat_id}: {e}")
-            sub = False
-            break
-
-    if not sub:
-        return await generate_pub(callback)
-    else:
+    if not public_ids:
         await callback.message.delete()
-        keyboard = types.ReplyKeyboardMarkup(keyboard=start_keyboard, resize_keyboard=True, one_time_keyboard=True)
+        keyboard = types.ReplyKeyboardMarkup(keyboard=start_keyboard, resize_keyboard=True, one_time_keyboard=False)
         buttons = types.InlineKeyboardMarkup(inline_keyboard=start_menu)
         await callback.message.answer("🤖 <b>Бот запущен</b> 👍️", reply_markup=keyboard)
         await callback.message.answer('🍿 <b>Привет, киноман!</b>\n\n'
                                       '🧐 Для поиска фильма или сериала используй кнопки ниже',
                                       reply_markup=buttons)
+    else:
+        user_id = callback.from_user.id
+        sub = True
+
+        for chat_id in public_ids:
+            try:
+                status = await callback.bot.get_chat_member(chat_id=chat_id, user_id=user_id)
+                if status.status not in ['creator', 'administrator', 'member']:
+                    sub = False
+                    break
+            except Exception as e:
+                print(f"Ошибка при проверке подписки пользователя {user_id} на паблик {chat_id}: {e}")
+                sub = False
+                break
+
+        if not sub:
+            return await generate_pub(callback)
+        else:
+            await callback.message.delete()
+            keyboard = types.ReplyKeyboardMarkup(keyboard=start_keyboard, resize_keyboard=True, one_time_keyboard=False)
+            buttons = types.InlineKeyboardMarkup(inline_keyboard=start_menu)
+            await callback.message.answer("🤖 <b>Бот запущен</b> 👍️", reply_markup=keyboard)
+            await callback.message.answer('🍿 <b>Привет, киноман!</b>\n\n'
+                                          '🧐 Для поиска фильма или сериала используй кнопки ниже',
+                                          reply_markup=buttons)
 
 
 @router.callback_query(F.data == "check_me")
@@ -124,7 +139,7 @@ async def instruction(callback: types.CallbackQuery):
 @router.callback_query(F.data == "video_guide")
 async def video_guide(callback: types.CallbackQuery):
     reply_mark = types.InlineKeyboardMarkup(inline_keyboard=back_user)
-    path = FSInputFile('/home/venya/Документы/python/KINOBOT/video.mp4')
+    path = FSInputFile('/home/KINOBOT/video.mp4')
     await callback.bot.send_video(chat_id=callback.from_user.id,
                                   video=path,
                                   caption='⬆️ Посмотрите видео как пользоваться ботом :)',
@@ -142,9 +157,10 @@ async def back_user_n(callback: CallbackQuery):
 async def back_user_nwq(callback: CallbackQuery):
     buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
 
-    db = SessionLocal()
+
     user_id = callback.from_user.id
-    date = get_user_join_date(db=db, user_id=user_id)
+    with SessionManager() as db:
+        date = get_user_join_date(db=db, user_id=user_id)
 
     await callback.bot.send_message(chat_id=user_id, text=f"🆔 <code>{user_id}</code>\n🕔 Дата регистрации: {date}\n\n🍿 "
                                   f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
@@ -154,9 +170,9 @@ async def back_user_nwq(callback: CallbackQuery):
 async def menu(message: Message):
     buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
 
-    db = SessionLocal()
     user_id = message.from_user.id
-    date = get_user_join_date(db=db, user_id=user_id)
+    with SessionManager() as db:
+        date = get_user_join_date(db=db, user_id=user_id)
 
     await message.answer(f"🆔 <code>{message.from_user.id}</code>\n🕔 Дата регистрации: {date}\n\n🍿 "
                          f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
@@ -178,15 +194,12 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "support")
 async def video_guide_callback_handler(callback: types.CallbackQuery):
-
     await callback.message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
 
 
 @router.message(F.text.lower() == "💁‍♂️ поддержка")
 async def video_guide_callback_handler(message: Message):
-
     await message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
-
 
 
 @router.callback_query(F.data == "menu")
@@ -194,9 +207,9 @@ async def menu_callback_handler(callback: CallbackQuery):
     await callback.message.delete()
     buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
 
-    db = SessionLocal()
     user_id = callback.from_user.id
-    date = get_user_join_date(db=db, user_id=user_id)
+    with SessionManager() as db:
+        date = get_user_join_date(db=db, user_id=user_id)
 
     await callback.message.answer(f"🆔 <code>{user_id}</code>\n🕔 Дата регистрации: {date}\n\n🍿 "
                                        f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
