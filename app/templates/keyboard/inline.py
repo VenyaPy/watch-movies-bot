@@ -10,6 +10,13 @@ start_menu = [
     ]
 ]
 
+
+again = [
+    [
+        types.InlineKeyboardButton(text='🔍 Повторить поиск', switch_inline_query_current_chat="")
+    ]
+]
+
 menu_buttons = [
         [
             types.InlineKeyboardButton(text='💡 Инструкция', callback_data='instruction')
@@ -173,4 +180,5 @@ chose = [
         types.InlineKeyboardButton(text='👈 Назад', callback_data='back_user')
     ]
 ]
+
 

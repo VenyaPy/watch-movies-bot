@@ -100,7 +100,7 @@ async def bd_admin(message: Message, state: FSMContext) -> None:
             user_id = int(user_data['id_admin'])
 
             db = SessionLocal()
-            add_admin_bd(db=db, user_id=517942985)
+            add_admin_bd(db=db, user_id=user_id)
             db.close()
             reply_markup = InlineKeyboardMarkup(inline_keyboard=back_admin)
             await message.answer(text=f"Спасибо!\n\nАдминистратор {user_id} добавлен!", reply_markup=reply_markup)

@@ -4,22 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="efd3065a-1948-44b6-a178-e4b5d0661d2a" name="Changes" comment="updated">
-      <change afterPath="$PROJECT_DIR$/.idea/KINOBOT.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/utils/cdn/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/utils/cdn/cdn.py" afterDir="false" />
+    <list default="true" id="efd3065a-1948-44b6-a178-e4b5d0661d2a" name="Changes" comment="Added a function to search for movies with links to them via hbtv api. For now I only work on films.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/database/kinobot.db" beforeDir="false" afterPath="$PROJECT_DIR$/app/database/kinobot.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/handlers/user/start.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/handlers/user/start.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/templates/keyboard/button.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/keyboard/button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/handlers/admin/permissions.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/handlers/admin/permissions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/templates/keyboard/inline.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/keyboard/inline.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/templates/text/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/templates/text/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/utils/cdn/cdn.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/cdn/cdn.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -252,11 +243,20 @@
       <option name="project" value="LOCAL" />
       <updated>1709844936803</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added a function to search for movies with links to them via hbtv api. For now I only work on films.">
+      <option name="closed" value="true" />
+      <created>1710022478179</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1710022478179</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="updated" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated" />
+    <MESSAGE value="Added a function to search for movies with links to them via hbtv api. For now I only work on films." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a function to search for movies with links to them via hbtv api. For now I only work on films." />
   </component>
 </project>
