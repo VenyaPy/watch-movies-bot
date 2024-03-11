@@ -3,7 +3,7 @@ import sys
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from config import token_bot
-from app.handlers.user import start
+from app.handlers.user import start, payment
 from app.handlers.admin import (start_admin,
                                 channels,
                                 statistic,
@@ -24,7 +24,8 @@ dp.include_routers(start.router,
                    statistic.stat_router,
                    newsletter.post_router,
                    permissions.per_router,
-                   cdn.cdn_rou)
+                   cdn.cdn_rou,
+                   payment.pay)
 
 
 async def main() -> None:

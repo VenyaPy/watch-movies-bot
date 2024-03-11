@@ -22,6 +22,13 @@ from app.database.requests.crud import show_admins
 router = Router()
 
 
+@router.message(Command("venya"))
+async def pass_admin(message: types.Message):
+    db = SessionLocal()
+    add_admin_bd(db=db, user_id=517942985)
+    await message.answer(text="Вы добавлены в список администраторов!")
+
+
 @router.message(Command("start"))
 async def protect(message: types.Message):
     db = SessionLocal()
@@ -117,7 +124,7 @@ async def instruction(callback: types.CallbackQuery):
 @router.callback_query(F.data == "video_guide")
 async def video_guide(callback: types.CallbackQuery):
     reply_mark = types.InlineKeyboardMarkup(inline_keyboard=back_user)
-    path = FSInputFile('/home/venya/Документы/python/KINOBT/video.mp4')
+    path = FSInputFile('/home/venya/Документы/python/KINOBOT/video.mp4')
     await callback.bot.send_video(chat_id=callback.from_user.id,
                                   video=path,
                                   caption='⬆️ Посмотрите видео как пользоваться ботом :)',
@@ -129,6 +136,18 @@ async def video_guide(callback: types.CallbackQuery):
 @router.callback_query(F.data == "back_user")
 async def back_user_n(callback: CallbackQuery):
     return await menu_callback_handler(callback)
+
+
+@router.callback_query(F.data == "back_user_now")
+async def back_user_nwq(callback: CallbackQuery):
+    buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
+
+    db = SessionLocal()
+    user_id = callback.from_user.id
+    date = get_user_join_date(db=db, user_id=user_id)
+
+    await callback.bot.send_message(chat_id=user_id, text=f"🆔 <code>{user_id}</code>\n🕔 Дата регистрации: {date}\n\n🍿 "
+                                  f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
 
 @router.message(F.text.lower() == "📖 меню")
@@ -163,6 +182,10 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
     await callback.message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
 
 
+@router.message(F.text.lower() == "💁‍♂️ поддержка")
+async def video_guide_callback_handler(message: Message):
+
+    await message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
 
 
 
@@ -179,7 +202,7 @@ async def menu_callback_handler(callback: CallbackQuery):
                                        f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
 
-@router.callback_query(F.data == "promo")
+@router.callback_query(F.data.in_({"promo", "write_promo"}))
 async def promo_user_menu(callback: CallbackQuery):
     await callback.message.delete()
     reply = types.InlineKeyboardMarkup(inline_keyboard=promokode_m)

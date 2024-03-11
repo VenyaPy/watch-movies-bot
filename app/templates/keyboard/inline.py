@@ -13,7 +13,8 @@ start_menu = [
 
 again = [
     [
-        types.InlineKeyboardButton(text='🔍 Повторить поиск', switch_inline_query_current_chat="")
+        types.InlineKeyboardButton(text='♻️ Повторить поиск', switch_inline_query_current_chat=""),
+        types.InlineKeyboardButton(text='👈 В меню', callback_data='back_user_now')
     ]
 ]
 
@@ -134,6 +135,13 @@ back_admin = [
 back_user = [
     [
         types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_user')
+    ]
+]
+
+
+back_user_new = [
+    [
+        types.InlineKeyboardButton(text='👈 Вернуться в меню', callback_data='back_user_now')
     ]
 ]
 

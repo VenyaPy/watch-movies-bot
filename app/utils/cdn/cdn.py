@@ -1,19 +1,12 @@
-import asyncio
-from aiogram import Router, F
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, InlineQuery
-from app.templates.keyboard.button import find
+from aiogram import Router
+from aiogram.types import InlineKeyboardMarkup
 from aiogram import types
-import json
-from app.templates.keyboard.inline import chose
 import aiohttp
 from uuid import uuid4
-from typing import List, Dict, Union
-import urllib.parse
 import re
 from app.templates.text.user import instructions_b
 from app.templates.keyboard.inline import again
+from config import api_hbtv
 
 
 cdn_rou = Router()
@@ -26,15 +19,15 @@ async def fetch_movies(query):
         if kp_link_match:
             # Извлекаем ID из ссылки
             kp_id = kp_link_match.group(2)
-            url = f"https://apivb.info/api/videos.json?id_kp={kp_id}&token=0befa987b7d85bcdad0b31e2e7c3f4ec"
+            url = f"https://apivb.info/api/videos.json?id_kp={kp_id}&token={api_hbtv}"
         else:
             # Дополнительная проверка на формат kpXXXXXX
             kp_match = re.match(r'kp(\d+)', query)
             if kp_match:
                 kp_id = kp_match.group(1)
-                url = f"https://apivb.info/api/videos.json?id_kp={kp_id}&token=0befa987b7d85bcdad0b31e2e7c3f4ec"
+                url = f"https://apivb.info/api/videos.json?id_kp={kp_id}&token={api_hbtv}"
             else:
-                url = f"https://apivb.info/api/videos.json?title={query}&token=0befa987b7d85bcdad0b31e2e7c3f4ec"
+                url = f"https://apivb.info/api/videos.json?title={query}&token={api_hbtv}"
 
         async with aiohttp.ClientSession() as session:
             async with session.get(url) as response:
@@ -83,7 +76,8 @@ async def inline_query(inline: types.InlineQuery):
 
         # Добавление кнопки для повторения поиска в конец списка кнопок
         keyboard_buttons.append(
-            [types.InlineKeyboardButton(text='↩️ Повторить поиск', switch_inline_query_current_chat="")])
+            [types.InlineKeyboardButton(text='♻️ Повторить поиск', switch_inline_query_current_chat=""),
+             types.InlineKeyboardButton(text='👈 В меню', callback_data='back_user_now')])
 
         # Создание клавиатуры с кнопками
         keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
