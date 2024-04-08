@@ -1,5 +1,4 @@
 import asyncio
-import sys
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from config import token_bot
@@ -9,11 +8,11 @@ from app.handlers.admin import (start_admin,
                                 statistic,
                                 newsletter,
                                 permissions)
-from app.utils.cdn import cdn
-
+from app.utils import search_film
+from aiogram.client.default import DefaultBotProperties
 
 TOKEN = token_bot
-bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
+bot = Bot(TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 dp = Dispatcher()
 
@@ -24,7 +23,7 @@ dp.include_routers(start.router,
                    channels.pub_router,
                    channels.form_router,
                    newsletter.post_router,
-                   cdn.cdn_rou,
+                   search_film.cdn_rou,
                    payment.pay)
 
 

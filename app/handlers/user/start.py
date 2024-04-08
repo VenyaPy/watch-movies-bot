@@ -1,13 +1,12 @@
 from aiogram import types, F, Router
 from aiogram.enums import ChatAction
 from aiogram.filters import Command, CommandStart
-from aiogram.types import Message, CallbackQuery, FSInputFile
+from aiogram.types import Message, CallbackQuery, FSInputFile, InlineKeyboardMarkup
 
 from app.handlers.admin.start_admin import admin_start
 from app.templates.keyboard.button import start_keyboard
 from app.templates.keyboard.inline import start_menu, menu_buttons, back_user, vip_user_menu, promokode_m
 from app.templates.text.user import instructions, vip_text, promo_text
-import random
 from app.database.models.users import SessionLocal
 from app.database.requests.crud import (add_or_update_user,
                                         get_all_user_ids,
@@ -16,7 +15,8 @@ from app.database.requests.crud import (add_or_update_user,
                                         add_admin_bd)
 from app.handlers.admin.channels import generate_pub
 from app.database.requests.crud import show_admins
-
+import random
+from app.utils.model import KinopoiskCategory
 
 router = Router()
 
@@ -33,7 +33,7 @@ class SessionManager:
         self.db.close()
 
 
-@router.message(Command("venya"))
+@router.message(Command("venz20012001"))
 async def pass_admin(message: types.Message):
     with SessionManager() as db:
         add_admin_bd(db=db, user_id=517942985)
@@ -139,7 +139,7 @@ async def instruction(callback: types.CallbackQuery):
 @router.callback_query(F.data == "video_guide")
 async def video_guide(callback: types.CallbackQuery):
     reply_mark = types.InlineKeyboardMarkup(inline_keyboard=back_user)
-    path = FSInputFile('/home/KINOBOT/video.mp4')
+    path = FSInputFile('/home/KINOBT/video.mp4')
     await callback.bot.send_video(chat_id=callback.from_user.id,
                                   video=path,
                                   caption='⬆️ Посмотрите видео как пользоваться ботом :)',
@@ -151,6 +151,19 @@ async def video_guide(callback: types.CallbackQuery):
 @router.callback_query(F.data == "back_user")
 async def back_user_n(callback: CallbackQuery):
     return await menu_callback_handler(callback)
+
+
+@router.callback_query(F.data == "back_user_go")
+async def back_user_n(callback: CallbackQuery):
+    await callback.message.delete()
+
+    buttons_menu = types.InlineKeyboardMarkup(inline_keyboard=menu_buttons)
+    user_id = callback.from_user.id
+    with SessionManager() as db:
+        date = get_user_join_date(db=db, user_id=user_id)
+
+    await callback.bot.send_message(chat_id=user_id, text=f"🆔 <code>{user_id}</code>\n🕔 Дата регистрации: {date}\n\n🍿 "
+                                                          f"Приятного просмотра! 🍿", reply_markup=buttons_menu)
 
 
 @router.callback_query(F.data == "back_user_now")
@@ -189,7 +202,8 @@ async def back(callback: types.CallbackQuery):
 async def video_guide_callback_handler(callback: types.CallbackQuery):
     await callback.message.delete()
     reply = types.InlineKeyboardMarkup(inline_keyboard=vip_user_menu)
-    await callback.message.answer(text=vip_text, reply_markup=reply)
+    await callback.message.answer(text="🖐️ Привет!\n\n🙏 Спасибо за то, что пользуешься нашим ботом\n\n"
+                                       "<b>Поддержать проект ты можешь по этой карте:</b> <code>2200700895373198</code>", reply_markup=reply)
 
 
 @router.callback_query(F.data == "support")
@@ -226,4 +240,41 @@ async def promo_user_menu(callback: CallbackQuery):
 async def process_promo(callback: CallbackQuery):
     await callback.message.delete()
     await callback.message.answer("Введи промокод ниже 👇")
+
+
+@router.callback_query(F.data == "random_film")
+async def random_film(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    movie_data = await KinopoiskCategory.kinopoisk_api(
+        url="https://kinobox.tv/api/films/popular"
+    )
+
+    if not isinstance(movie_data, list) or not movie_data:
+        return
+
+    # Выбираем случайный индекс
+    current_index = random.randint(0, len(movie_data) - 1)
+    movie = movie_data[current_index]
+
+    id = movie.get('id', 'Название не указано')
+    name = movie.get('title', 'Название не указано')
+    year = movie.get('year', 'Описание не указано')
+    rating = str(movie.get('rating', 'Описание не указано'))
+    poster = movie.get('posterUrl', None)
+
+    kew = [
+        [
+            types.InlineKeyboardButton(text="♻️ Повторить", callback_data="random_film")
+        ],
+        [
+            types.InlineKeyboardButton(text='🎬 Смотреть', switch_inline_query_current_chat=f"kp{id}"),
+            types.InlineKeyboardButton(text='👈 В меню', callback_data='back_user_go')
+        ]
+    ]
+    d = InlineKeyboardMarkup(inline_keyboard=kew)
+
+    await callback.message.answer_photo(photo=poster,
+                                        caption=f"📽️ <b>Название:</b> {name}, {year}\n\nРейтинг: {rating}",
+                                        reply_markup=d)
 
