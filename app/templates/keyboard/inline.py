@@ -32,6 +32,9 @@ menu_buttons = [
             types.InlineKeyboardButton(text='💁‍♂️ Владелец', callback_data='support')
         ],
         [
+            types.InlineKeyboardButton(text="🔥 Популярные категории", callback_data="category")
+        ],
+        [
           types.InlineKeyboardButton(text="🎲 Случайный фильм", callback_data="random_film")
         ],
         [
@@ -171,6 +174,19 @@ chose = [
     ],
     [
         types.InlineKeyboardButton(text='👈 Назад', callback_data='back_user')
+    ]
+]
+
+
+catygory = [
+    [
+        types.InlineKeyboardButton(text='🎬 Фильмы', callback_data="random_films"),
+    ],
+    [
+        types.InlineKeyboardButton(text='🎞️ Сериалы', callback_data="random_serial"),
+    ],
+    [
+        types.InlineKeyboardButton(text='📹 Аниме', callback_data="random_anime")
     ]
 ]
 

@@ -9,6 +9,7 @@ from app.handlers.admin import (start_admin,
                                 newsletter,
                                 permissions)
 from app.utils import search_film
+from app.handlers.user import category
 from aiogram.client.default import DefaultBotProperties
 
 TOKEN = token_bot
@@ -24,11 +25,13 @@ dp.include_routers(start.router,
                    channels.form_router,
                    newsletter.post_router,
                    search_film.cdn_rou,
-                   payment.pay)
+                   payment.pay,
+                   category.category_router)
 
 
 async def main() -> None:
     await dp.start_polling(bot)
+
 
 
 if __name__ == "__main__":
