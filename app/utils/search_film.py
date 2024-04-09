@@ -67,7 +67,7 @@ async def inline_query(inline: types.InlineQuery):
         film_id = film.get("kinopoisk_id")
         title = film.get('title_ru') or film.get('title_en')
         year = film.get('year', '')
-        trailer_url = film.get('trailer', '').replace('\\/', '/')
+        trailer_url = film.get('trailer', '')
 
         movie = await KinopoiskCategory.kinopoisk_search(id=film_id)
         quality = movie.get('ratingKinopoisk')
@@ -116,6 +116,7 @@ async def inline_query(inline: types.InlineQuery):
                 f"🌟 <b>Рейтинг:</b> {quality}\n"
                 f"🎭 <b>Жанры:</b> {genres}\n\n"
                 f"🔎 <b>Описание:</b>\n{about}\n\n"
+                f"⚠️ Отключите VPN перед началом просмотра!\n\n"
                 f"🍿 Приятного просмотра! 🍿"
             ))
 

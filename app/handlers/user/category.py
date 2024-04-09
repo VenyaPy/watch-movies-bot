@@ -14,39 +14,51 @@ category_router = Router()
 
 @category_router.callback_query(F.data == "random_film")
 async def random_film(callback: types.CallbackQuery):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
+    type = 'random'
 
-    movie_data = await KinopoiskCategory.kinopoisk_api(
-        url="https://kinobox.tv/api/films/popular"
-    )
-
-    if not isinstance(movie_data, list) or not movie_data:
+    url = 'https://api.kinopoisk.dev/v1.4/movie?page=1&limit=150&type=movie&lists=popular-films'
+    data = await CategoryFilm.kinopoisk_search(url=url, types=type)
+    film_data = data.get('docs', [])
+    if not film_data:
+        await callback.message.answer("Фильмы не найдены.")
         return
 
-    # Выбираем случайный индекс
-    current_index = random.randint(0, len(movie_data) - 1)
-    movie = movie_data[current_index]
+    # Выбираем случайный фильм из списка
+    film = random.choice(film_data)
+    id = film.get('id', 'ID не указан')
+    name = film.get('name', 'Название не указано')
+    year = film.get('year', 'Год не указан')
+    altname = film.get('alternativeName', '') or 'Фильм'
+    details = film.get('description', 'Описания нет')
+    rating_kp = str(film.get('rating', {}).get('kp', 'Рейтинг не указан'))
+    poster = film.get('poster', {}).get('url', None)
 
-    id = movie.get('id', 'Название не указано')
-    name = movie.get('title', 'Название не указано')
-    year = movie.get('year', 'Описание не указано')
-    rating = str(movie.get('rating', 'Описание не указано'))
-    poster = movie.get('posterUrl', None)
+    caption = (f"🎬 <b>Название:</b> {name} ({altname}), {year}\n\n"
+               f"⭐ <b>Рейтинг КП:</b> {rating_kp}\n\n"
+               f"📝 <b>Описание:</b> {details}")
 
-    kew = [
-        [
-            types.InlineKeyboardButton(text="♻️ Повторить", callback_data="random_film")
-        ],
-        [
-            types.InlineKeyboardButton(text='🎬 Смотреть', switch_inline_query_current_chat=f"kp{id}"),
-            types.InlineKeyboardButton(text='👈 В меню', callback_data='back_user_go')
-        ]
+    film_menu = [
+        [types.InlineKeyboardButton(text="♻️ Повторить", callback_data="random_film")],
+        [types.InlineKeyboardButton(text='🎬 Смотреть', switch_inline_query_current_chat=f"kp{id}"),
+         types.InlineKeyboardButton(text='👈 В меню', callback_data='back_user_go')]
     ]
-    d = InlineKeyboardMarkup(inline_keyboard=kew)
+    reply_markup = InlineKeyboardMarkup(inline_keyboard=film_menu)
 
-    await callback.message.answer_photo(photo=poster,
-                                        caption=f"📽️ <b>Название:</b> {name}, {year}\n\nРейтинг: {rating}",
-                                        reply_markup=d)
+    try:
+        await callback.message.answer_photo(
+            photo=poster,
+            caption=caption,
+            reply_markup=reply_markup
+        )
+    except TelegramBadRequest as e:
+        if "wrong type of the web page content" in str(e):
+            await random_film(callback)
+        else:
+            await random_film(callback)
 
 
 @category_router.callback_query(F.data == "category")
@@ -58,9 +70,13 @@ async def catygoryes(callback: CallbackQuery):
 
 user_last_anime_index = {}
 
+
 @category_router.callback_query(F.data == "random_anime")
 async def random_anime(callback: types.CallbackQuery):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
     type = 'anime'
     user_id = callback.from_user.id
     if user_id not in user_last_anime_index:
@@ -106,20 +122,22 @@ async def random_anime(callback: types.CallbackQuery):
                 caption=caption,
                 reply_markup=reply_markup
             )
-            break  # Успешно отправлено, выходим из цикла
+            break
         except TelegramBadRequest as e:
             if "wrong type of the web page content" in str(e):
-                continue  # Пропускаем текущий элемент и пробуем следующий
+                continue
             else:
-                await callback.message.answer("Произошла ошибка.")
-                break
+                await random_anime(callback)
 
 
 user_last_film_index = {}
 
 @category_router.callback_query(F.data == "random_films")
 async def random_films(callback: types.CallbackQuery):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
     type = 'film'
     user_id = callback.from_user.id
     if user_id not in user_last_film_index:
@@ -170,8 +188,7 @@ async def random_films(callback: types.CallbackQuery):
             if "wrong type of the web page content" in str(e):
                 continue
             else:
-                await callback.message.answer("Произошла ошибка.")
-                break
+                await random_films(callback)
 
 
 user_last_serial_index = {}
@@ -179,7 +196,10 @@ user_last_serial_index = {}
 
 @category_router.callback_query(F.data == "random_serial")
 async def random_serial(callback: types.CallbackQuery):
-    await callback.message.delete()
+    try:
+        await callback.message.delete()
+    except Exception:
+        pass
     type = 'serial'
     user_id = callback.from_user.id
     if user_id not in user_last_serial_index:
@@ -230,5 +250,4 @@ async def random_serial(callback: types.CallbackQuery):
             if "wrong type of the web page content" in str(e):
                 continue
             else:
-                await callback.message.answer("Произошла ошибка.")
-                break
+                await random_serial(callback)

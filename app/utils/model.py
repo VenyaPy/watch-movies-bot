@@ -16,7 +16,7 @@ def get_api_key():
 
 
 class Category:
-    headers = {'accept': 'application/json', 'X-API-KEY': 'NACP423-53M4ZWB-MWA1YJM-VWV6PEW'}
+    headers = {'accept': 'application/json', 'X-API-KEY': 'VBZ63SW-PFHMYEM-M3384F6-X6BXVSY'}
 
     @classmethod
     async def fetch_data(cls, url, types):

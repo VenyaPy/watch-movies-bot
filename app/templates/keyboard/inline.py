@@ -24,12 +24,8 @@ menu_buttons = [
         ],
         [
             types.InlineKeyboardButton(text='💝 Поддержать', callback_data='vip_info'),
-            types.InlineKeyboardButton(text='🔠 Промокоды', callback_data='promo'),
+            types.InlineKeyboardButton(text='💁‍♂️ Владелец', callback_data='support'),
 
-        ],
-        [
-            types.InlineKeyboardButton(text='↪️ Поделиться', url='https://t.me/WildKino_bot?startgroup=new'),
-            types.InlineKeyboardButton(text='💁‍♂️ Владелец', callback_data='support')
         ],
         [
             types.InlineKeyboardButton(text="🔥 Популярные категории", callback_data="category")
