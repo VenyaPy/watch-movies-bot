@@ -36,11 +36,12 @@ _2. Админ меню:_
 
 1. **Клонирование проекта**
 
-   Для начала, клонируйте репозиторий проекта на ваш локальный компьютер:
+Для начала, клонируйте репозиторий проекта на ваш локальный компьютер:
 
-   ```
-   git clone https://github.com/your_username/your_project_name.git
-   cd your_project_name```
+```
+git clone https://github.com/your_username/your_project_name.git
+cd your_project_name
+```
 
 2. **Сборка Docker-образа**
 
