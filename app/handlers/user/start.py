@@ -137,7 +137,7 @@ async def instruction(callback: types.CallbackQuery):
 @router.callback_query(F.data == "video_guide")
 async def video_guide(callback: types.CallbackQuery):
     reply_mark = types.InlineKeyboardMarkup(inline_keyboard=back_user)
-    path = FSInputFile('/home/KINOBT/video.mp4')
+    path = FSInputFile('/app/video.mp4')
     await callback.bot.send_video(chat_id=callback.from_user.id,
                                   video=path,
                                   caption='⬆️ Посмотрите видео как пользоваться ботом :)',
@@ -238,6 +238,7 @@ async def promo_user_menu(callback: CallbackQuery):
 async def process_promo(callback: CallbackQuery):
     await callback.message.delete()
     await callback.message.answer("Введи промокод ниже 👇")
+
 
 
 

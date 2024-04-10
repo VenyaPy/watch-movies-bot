@@ -48,6 +48,7 @@ def is_valid_url(url):
 default_poster = "app/photo.png"
 
 
+
 @cdn_rou.inline_query()
 async def inline_query(inline: types.InlineQuery):
     query = inline.query
@@ -104,6 +105,7 @@ async def inline_query(inline: types.InlineQuery):
 
         # Создание клавиатуры с кнопками
         keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
+
 
 
         # Сообщение в результате поиска

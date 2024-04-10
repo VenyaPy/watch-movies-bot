@@ -3,10 +3,8 @@ import datetime
 import aioredis
 import json
 
+from config import api_keys, x_api_key
 
-api_keys = ["15858539-fb77-44ef-9565-8b965954ebb3",
-            "b96ac5f5-3bf5-42ae-b90e-1c6dd15cef5a",
-            "441451fe-c5d1-46d7-aae8-a6f80580220d"]
 
 def get_api_key():
     now = datetime.datetime.now()
@@ -16,7 +14,7 @@ def get_api_key():
 
 
 class Category:
-    headers = {'accept': 'application/json', 'X-API-KEY': 'VBZ63SW-PFHMYEM-M3384F6-X6BXVSY'}
+    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
 
     @classmethod
     async def fetch_data(cls, url, types):
@@ -41,7 +39,7 @@ class Category:
 
 
 class CategoryFilm:
-    headers = {'accept': 'application/json', 'X-API-KEY': 'NACP423-53M4ZWB-MWA1YJM-VWV6PEW'}
+    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
 
     @classmethod
     async def fetch_data(cls, url, types):
@@ -66,7 +64,7 @@ class CategoryFilm:
 
 
 class CategorySerial:
-    headers = {'accept': 'application/json', 'X-API-KEY': 'NACP423-53M4ZWB-MWA1YJM-VWV6PEW'}
+    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
 
     @classmethod
     async def fetch_data(cls, url, types):
@@ -116,7 +114,7 @@ class KinopoiskCategory:
     @classmethod
     async def kinopoisk_search(cls, id):
         try:
-            current_api_key = get_api_key()  # Предполагается, что функция get_api_key() возвращает ваш API ключ
+            current_api_key = get_api_key()
             url = f"https://kinopoiskapiunofficial.tech/api/v2.2/films/{id}"
             headers = {
                 'accept': 'application/json',
