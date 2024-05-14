@@ -206,12 +206,12 @@ async def video_guide_callback_handler(callback: types.CallbackQuery):
 
 @router.callback_query(F.data == "support")
 async def video_guide_callback_handler(callback: types.CallbackQuery):
-    await callback.message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
+    await callback.message.answer("<b>Связаться по EMAIL</b>: ve.po2014@yandex.ru")
 
 
 @router.message(F.text.lower() == "💁‍♂️ поддержка")
 async def video_guide_callback_handler(message: Message):
-    await message.answer_contact(phone_number='+79936097096', first_name='Venya', last_name='Popov')
+    await message.answer("<b>Связаться по EMAIL</b>: ve.po2014@yandex.ru")
 
 
 @router.callback_query(F.data == "menu")

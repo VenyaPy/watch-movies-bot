@@ -3,7 +3,7 @@ import datetime
 import aioredis
 import json
 
-from config import api_keys, x_api_key
+from config import api_keys, api
 
 
 def get_api_key():
@@ -14,7 +14,7 @@ def get_api_key():
 
 
 class Category:
-    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
+    headers = {'accept': 'application/json', 'X-API-KEY': api}
 
     @classmethod
     async def fetch_data(cls, url, types):
@@ -39,7 +39,7 @@ class Category:
 
 
 class CategoryFilm:
-    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
+    headers = {'accept': 'application/json', 'X-API-KEY': api}
 
     @classmethod
     async def fetch_data(cls, url, types):
@@ -64,7 +64,7 @@ class CategoryFilm:
 
 
 class CategorySerial:
-    headers = {'accept': 'application/json', 'X-API-KEY': x_api_key}
+    headers = {'accept': 'application/json', 'X-API-KEY': api}
 
     @classmethod
     async def fetch_data(cls, url, types):

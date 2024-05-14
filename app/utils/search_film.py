@@ -45,13 +45,19 @@ def is_valid_url(url):
     except ValueError:
         return False
 
-default_poster = "app/photo.png"
 
+default_poster = "app/photo.png"
 
 
 @cdn_rou.inline_query()
 async def inline_query(inline: types.InlineQuery):
-    query = inline.query
+    query = inline.query.strip()
+
+    # Минимальная длина запроса
+    if len(query) < 3:
+        await inline.answer([], cache_time=1, is_personal=True)
+        return
+
     response = await fetch_movies(query)
     results = []
 
@@ -85,7 +91,7 @@ async def inline_query(inline: types.InlineQuery):
         countries_list = movie.get('countries', [])
         countries = ', '.join([country['country'] for country in countries_list])
 
-        my_site_url = f"https://kinodomvideo.ru/video.php?id={film_id}"
+        my_site_url = f"https://kinowild.ru/player?{film_id}"
 
         unique_id = str(uuid4())
 
@@ -106,10 +112,7 @@ async def inline_query(inline: types.InlineQuery):
         # Создание клавиатуры с кнопками
         keyboard = InlineKeyboardMarkup(inline_keyboard=keyboard_buttons)
 
-
-
         # Сообщение в результате поиска
-
         result_text = types.InputTextMessageContent(
             message_text=(
                 f"🎬 <b>{title}</b> ({film.get('title_en')})\n\n"
@@ -145,10 +148,3 @@ async def inline_query(inline: types.InlineQuery):
         ))
 
     await inline.answer(results, cache_time=1, is_personal=True)
-
-
-
-
-
-
-
